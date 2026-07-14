@@ -5,7 +5,8 @@ import Home from './pages/Home';
 import Equipa from './pages/Equipa';
 import Regulamento from './pages/Regulamento';
 import Galeria from './pages/Galeria';
-import Contactos from './pages/Contactos'; // <-- 1. Importámos a página
+import Contactos from './pages/Contactos';
+import Noticias from './pages/Noticias'; // <-- Importamos a nova página
 import './App.css';
 
 function App() {
@@ -20,7 +21,8 @@ function App() {
             <Route path="/equipa" element={<Equipa />} />
             <Route path="/regulamento" element={<Regulamento />} />
             <Route path="/galeria" element={<Galeria />} />
-            <Route path="/contactos" element={<Contactos />} /> {/* <-- 2. Adicionámos a Rota */}
+            <Route path="/contactos" element={<Contactos />} />
+            <Route path="/noticias" element={<Noticias />} /> {/* <-- Adicionamos a Rota */}
           </Routes>
         </main>
 
