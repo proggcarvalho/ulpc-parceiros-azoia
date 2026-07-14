@@ -31,7 +31,7 @@ export default function Navbar() {
             <Link to="/regulamento" className="hover:text-blue-800 transition">Regulamento</Link>
             <Link to="/galeria" className="hover:text-blue-800 transition">Galeria</Link>
             <Link to="/contactos" className="hover:text-blue-800 transition">Contactos</Link>
-            <Link to="/noticias" className="hover:text-orange-500 font-semibold text-blue-800">Notícias</Link>
+            <Link to="/noticias" className="block py-2 hover:text-orange-500 font-semibold text-blue-800" onClick={() => setIsOpen(false)}>Notícias</Link>
           </div>
 
           {/* Barra de Pesquisa */}

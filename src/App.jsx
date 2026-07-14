@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -6,12 +7,14 @@ import Equipa from './pages/Equipa';
 import Regulamento from './pages/Regulamento';
 import Galeria from './pages/Galeria';
 import Contactos from './pages/Contactos';
-import Noticias from './pages/Noticias'; // <-- Importamos a nova página
+import Noticias from './pages/Noticias'; 
 import './App.css';
+
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Navbar />
         
