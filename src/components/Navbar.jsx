@@ -11,9 +11,7 @@ export default function Navbar() {
         
         {/* ESQUERDA: Logótipo e Texto Oficial */}
         <Link to="/" className="flex items-center gap-4">
-          
-          {/* AQUI ESTÁ O TEU LOGÓTIPO! */}
-          <img src={logoUlpc} alt="Logótipo ULPC" className="w-16 h-16 object-contain flex-shrink-0 mix-blend-multiply" />          {/* Texto formatado como no site da ANEPC */}
+          <img src={logoUlpc} alt="Logótipo ULPC" className="w-16 h-16 object-contain flex-shrink-0 mix-blend-multiply" />
           <div className="flex flex-col text-slate-800">
             <span className="text-lg md:text-xl font-extrabold tracking-wide leading-tight">UNIDADE LOCAL</span>
             <span className="text-sm font-medium leading-tight">DE PROTEÇÃO CIVIL</span>
@@ -25,13 +23,14 @@ export default function Navbar() {
         <div className="hidden lg:flex flex-col items-end gap-3">
           
           {/* Links de Navegação */}
-          <div className="flex gap-5 text-sm font-medium text-slate-600">
+          <div className="flex gap-5 text-sm font-medium text-slate-600 items-center">
             <Link to="/" className="hover:text-blue-800 transition">Início</Link>
             <Link to="/equipa" className="hover:text-blue-800 transition">Equipa</Link>
             <Link to="/regulamento" className="hover:text-blue-800 transition">Regulamento</Link>
             <Link to="/galeria" className="hover:text-blue-800 transition">Galeria</Link>
             <Link to="/contactos" className="hover:text-blue-800 transition">Contactos</Link>
-            <Link to="/noticias" className="block py-2 hover:text-orange-500 font-semibold text-blue-800" onClick={() => setIsOpen(false)}>Notícias</Link>
+            {/* O erro no PC estava aqui, já está corrigido! */}
+            <Link to="/noticias" className="font-semibold text-blue-800 hover:text-orange-500 transition">Notícias</Link>
           </div>
 
           {/* Barra de Pesquisa */}
@@ -70,6 +69,8 @@ export default function Navbar() {
           <Link to="/regulamento" onClick={() => setIsOpen(false)} className="block text-slate-600 hover:text-blue-800 font-medium">Regulamento</Link>
           <Link to="/galeria" onClick={() => setIsOpen(false)} className="block text-slate-600 hover:text-blue-800 font-medium">Galeria</Link>
           <Link to="/contactos" onClick={() => setIsOpen(false)} className="block text-slate-600 hover:text-blue-800 font-medium">Contactos</Link>
+          {/* Adicionei o link das Notícias aqui para o Mobile! */}
+          <Link to="/noticias" onClick={() => setIsOpen(false)} className="block font-semibold text-blue-800 hover:text-orange-500">Notícias</Link>
           
           <div className="relative mt-2">
             <input type="text" placeholder="Pesquisar..." className="w-full bg-slate-100 rounded-full py-2 px-4 text-sm focus:outline-none" />
