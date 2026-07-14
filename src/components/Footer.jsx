@@ -28,7 +28,7 @@ export default function Footer() {
             <li><span className="font-semibold text-orange-400">Emergência:</span> 112</li>
             <li><span className="font-semibold text-orange-400">Proteção Civil Municipal:</span> 244 839 300</li>
             <li><span className="font-semibold text-orange-400">Direto:</span> 968 506 078</li>
-            <li><span className="font-semibold text-orange-400">Email:</span> aulpc.pa@gmail.com</li>
+            <li><span className="font-semibold text-orange-400">Email:</span> ulpc.pa@gmail.com</li>
           </ul>
         </div>
 
