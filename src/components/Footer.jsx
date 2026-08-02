@@ -1,5 +1,6 @@
 import logoUlpc from '../assets/logo_ULPC.jpg';
-import logoJunta from '../assets/logo_junta.png'; // <-- 1. Importas a imagem da Junta aqui!
+import logoJunta from '../assets/logo_junta.png';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -47,6 +48,14 @@ export default function Footer() {
       {/* Copyright */}
       <div className="text-center text-xs text-slate-500 mt-10 pt-4 border-t border-slate-800">
         &copy; {new Date().getFullYear()} ULPC Parceiros e Azoia. Todos os direitos reservados.
+      </div>
+      <div className="mt-4 text-center">
+      <Link 
+        to="/login" 
+        className="text-xs text-slate-400 hover:text-slate-600 transition"
+      >
+        Acesso Reservado  
+      </Link>
       </div>
     </footer>
   );
