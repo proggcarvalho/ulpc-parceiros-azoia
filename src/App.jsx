@@ -12,6 +12,8 @@ import Login from './pages/Login';
 import CentralSinalizacao from './pages/CentralSinalizacao';
 import ProtectedRoute from './components/ProtectedRoute';
 import NovoCasoForm from './components/NovoCasoForm';
+import GestaoEquipa from './pages/GestaoEquipa'; 
+import Dashboard from './pages/Dashboard';
 import './App.css';
 
 function App() {
@@ -39,6 +41,24 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CentralSinalizacao />
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* Rota da Gestão de Equipa Protegida */}
+            <Route 
+              path="/gestao-equipa" 
+              element={
+                <ProtectedRoute>
+                  <GestaoEquipa />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
                 </ProtectedRoute>
               } 
             />

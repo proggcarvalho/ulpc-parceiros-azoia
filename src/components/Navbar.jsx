@@ -1,9 +1,20 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logoUlpc from '../assets/logo_ULPC1.png';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  
+  // Verifica se o utilizador tem o "crachá" guardado no browser
+  const estaAutenticado = !!localStorage.getItem('token'); 
+
+  // Função para fechar a sessão
+  const handleLogout = () => {
+    localStorage.clear(); // Apaga o token e os dados
+    navigate('/'); // Manda o utilizador de volta para a página inicial
+    setIsOpen(false); // Fecha o menu mobile se estiver aberto
+  };
 
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
@@ -23,14 +34,34 @@ export default function Navbar() {
         <div className="hidden lg:flex flex-col items-end gap-3">
           
           {/* Links de Navegação */}
-          <div className="flex gap-5 text-sm font-medium text-slate-600 items-center">
+          <div className="flex gap-4 lg:gap-5 text-sm font-medium text-slate-600 items-center">
             <Link to="/" className="hover:text-blue-800 transition">Início</Link>
             <Link to="/equipa" className="hover:text-blue-800 transition">Equipa</Link>
             <Link to="/regulamento" className="hover:text-blue-800 transition">Regulamento</Link>
             <Link to="/galeria" className="hover:text-blue-800 transition">Galeria</Link>
             <Link to="/contactos" className="hover:text-blue-800 transition">Contactos</Link>
-            {/* O erro no PC estava aqui, já está corrigido! */}
             <Link to="/noticias" className="font-semibold text-blue-800 hover:text-orange-500 transition">Notícias</Link>
+            
+            {/* LINKS PRIVADOS (Só aparecem se houver login feito) */}
+            {estaAutenticado && (
+              <>
+                <span className="text-slate-300">|</span>
+                <Link to="/central-admin" className="text-red-600 font-bold hover:text-red-800 transition">Central</Link>
+                <Link to="/dashboard" className="hover:text-[#1e2a45] transition">Estatísticas</Link>
+                <Link to="/gestao-equipa" className="hover:text-[#1e2a45] transition">Gestão</Link>
+                <button onClick={handleLogout} className="text-xs font-bold text-slate-400 hover:text-red-500 transition ml-1">
+                  SAIR
+                </button>
+              </>
+            )}
+
+            {/* BOTÃO DE LOGIN (Só aparece se a pessoa NÃO estiver autenticada) */}
+            {!estaAutenticado && (
+              <>
+                <span className="text-slate-300">|</span>
+                <Link to="/login" className="font-bold text-[#1e2a45] hover:text-blue-800 transition">Área Reservada</Link>
+              </>
+            )}
           </div>
 
           {/* Barra de Pesquisa */}
@@ -69,8 +100,26 @@ export default function Navbar() {
           <Link to="/regulamento" onClick={() => setIsOpen(false)} className="block text-slate-600 hover:text-blue-800 font-medium">Regulamento</Link>
           <Link to="/galeria" onClick={() => setIsOpen(false)} className="block text-slate-600 hover:text-blue-800 font-medium">Galeria</Link>
           <Link to="/contactos" onClick={() => setIsOpen(false)} className="block text-slate-600 hover:text-blue-800 font-medium">Contactos</Link>
-          {/* Adicionei o link das Notícias aqui para o Mobile! */}
           <Link to="/noticias" onClick={() => setIsOpen(false)} className="block font-semibold text-blue-800 hover:text-orange-500">Notícias</Link>
+          
+          {/* LINKS PRIVADOS MOBILE */}
+          {estaAutenticado && (
+            <div className="border-t border-slate-100 pt-4 flex flex-col space-y-4">
+              <Link to="/central-admin" onClick={() => setIsOpen(false)} className="block font-bold text-red-600">Central de Comando</Link>
+              <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block text-slate-600 font-medium">Estatísticas</Link>
+              <Link to="/gestao-equipa" onClick={() => setIsOpen(false)} className="block text-slate-600 font-medium">Gestão de Equipa</Link>
+              <button onClick={handleLogout} className="text-left font-bold text-slate-400 hover:text-red-500 w-full pt-2">
+                Sair da Sessão
+              </button>
+            </div>
+          )}
+
+          {/* LOGIN MOBILE */}
+          {!estaAutenticado && (
+            <div className="border-t border-slate-100 pt-4">
+              <Link to="/login" onClick={() => setIsOpen(false)} className="block font-bold text-[#1e2a45]">Área Reservada</Link>
+            </div>
+          )}
           
           <div className="relative mt-2">
             <input type="text" placeholder="Pesquisar..." className="w-full bg-slate-100 rounded-full py-2 px-4 text-sm focus:outline-none" />
