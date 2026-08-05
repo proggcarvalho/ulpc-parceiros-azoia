@@ -1,14 +1,14 @@
 import { Navigate } from 'react-router-dom';
 
 export default function ProtectedRoute({ children }) {
-  // Verifica se o nosso "token" provisório está guardado no browser
-  const isAuthenticated = localStorage.getItem('ulpc_admin_auth') === 'true';
+  // Vai à memória do browser ver se o crachá (token) existe
+  const token = localStorage.getItem('token');
 
-  // Se não estiver autenticado, recambiamos o utilizador para a página de login
-  if (!isAuthenticated) {
+  // Se não existir token, redireciona para o login de forma segura e silenciosa
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // Se estiver tudo ok, deixamos passar para a página pretendida (children)
+  // Se o token existir, desenha o ecrã protegido normalmente (a Central)
   return children;
 }

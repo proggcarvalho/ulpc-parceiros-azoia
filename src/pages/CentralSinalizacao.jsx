@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Polygon } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -67,7 +69,7 @@ const gerarCone = (center, radiusKm, bearing, angle) => {
 // Dicionário de ângulos do vento
 const compassAngles = { N: 0, NE: 45, E: 90, SE: 135, S: 180, SO: 225, O: 270, NO: 315 };
 
-// Componente para capturar cliques no mapa (agora serve para Casos e Fogos)
+// Componente para capturar cliques no mapa
 function CapturaCliqueMapa({ modo, aoClicar }) {
   useMapEvents({
     click(e) {
@@ -82,7 +84,7 @@ export default function CentralSinalizacao() {
   const [casos, setCasos] = useState([]);
   
   // Modos de interação do mapa
-  const [modoMapa, setModoMapa] = useState('NENHUM'); // 'CASO', 'FOGO', ou 'NENHUM'
+  const [modoMapa, setModoMapa] = useState('NENHUM'); 
   const [novaCoord, setNovaCoord] = useState(null);
   const [form, setForm] = useState({ nome: '', morada: '', prioridade: 'Baixa', observacoes: '' });
 
@@ -162,6 +164,59 @@ export default function CentralSinalizacao() {
   };
 
   const casosRiscoAlta = casos.filter(c => casosEmRiscoIds.includes(c.id) && c.prioridade === 'Alta').length;
+
+// --- NOVA FUNÇÃO DE EXPORTAÇÃO PDF (SEGURA) ---
+  const exportarRelatorioPDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Configura o Título
+      doc.setFontSize(18);
+      doc.setTextColor(30, 42, 69); 
+      doc.text(`Relatório de Evacuação - Cidadãos Sinalizados (${filtro})`, 14, 22);
+      
+      // Subtítulo e Data
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("ULPC - União de Freguesias de Parceiros e Azoia", 14, 28);
+      doc.text(`Documento gerado a: ${new Date().toLocaleString('pt-PT')}`, 14, 34);
+
+      // Usa os casos filtrados e protege contra dados nulos da BD
+      const colunas = ["Prioridade", "Nome do Cidadão", "Morada/Localização"];
+      const linhas = casosFiltrados.map(caso => {
+        const emRisco = casosEmRiscoIds.includes(caso.id) ? ' (EM RISCO EXTREMO)' : '';
+        
+        // SEGURANÇA: Se a prioridade, nome ou morada estiverem vazios na BD, não rebenta!
+        const prioridadeSegura = caso.prioridade ? caso.prioridade.toUpperCase() : 'BAIXA';
+        const nomeSeguro = caso.nome ? (caso.nome + emRisco) : ('Desconhecido' + emRisco);
+        const moradaSegura = caso.morada ? caso.morada : 'Sem morada registada';
+
+        return [prioridadeSegura, nomeSeguro, moradaSegura];
+      });
+
+      // Desenha a tabela no PDF usando a nova importação
+      autoTable(doc, {
+        startY: 42,
+        head: [colunas],
+        body: linhas,
+        theme: 'grid',
+        headStyles: { fillColor: [30, 42, 69], textColor: [255, 255, 255] },
+        alternateRowStyles: { fillColor: [245, 247, 250] },
+        didParseCell: function(data) {
+          if (data.section === 'body' && data.column.index === 0) {
+            if (data.cell.raw === 'ALTA') data.cell.styles.textColor = [220, 38, 38]; 
+            if (data.cell.raw === 'MÉDIA') data.cell.styles.textColor = [202, 138, 4]; 
+            if (data.cell.raw === 'BAIXA') data.cell.styles.textColor = [22, 163, 74]; 
+          }
+        }
+      });
+
+      doc.save(`Relatorio_ULPC_${filtro.replace(/\s+/g, '_')}.pdf`);
+    } catch (erro) {
+      console.error("Erro ao gerar o PDF:", erro);
+      alert("Houve um problema ao criar o PDF! Abre a consola (F12) para ver os detalhes.");
+    }
+  };
 
   return (
     <div className="flex flex-col h-[85vh] bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden mt-4">
@@ -335,8 +390,24 @@ export default function CentralSinalizacao() {
           {modoMapa !== 'CASO' ? (
             <>
               <div className="p-5 border-b border-slate-100">
-                <h2 className="text-lg font-bold text-slate-800 mb-1">Casos Sinalizados</h2>
-                <p className="text-xs text-slate-500 mb-4">Filtrar lista por nível de risco</p>
+                {/* CABEÇALHO DA BARRA LATERAL COM BOTÃO PDF */}
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-800">Casos Sinalizados</h2>
+                    <p className="text-xs text-slate-500 mb-4">Filtrar lista por nível de risco</p>
+                  </div>
+                  
+                  <button 
+                    onClick={exportarRelatorioPDF}
+                    className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded border border-slate-300 transition shadow-sm text-xs"
+                    title="Exportar lista atual para PDF"
+                  >
+                    <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    PDF
+                  </button>
+                </div>
                 
                 {/* ALERTA DE RISCO (Visível apenas se houver simulação) */}
                 {fogoCoord && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -8,32 +8,39 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // DEFESA 1: Se o utilizador já tiver o "crachá", nem o deixa ver esta página!
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/central-admin');
+    }
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setErro('');
     setLoading(true);
 
     try {
-      // Fala com a nossa nova rota de Login no C#
       const resposta = await fetch('http://localhost:5209/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email: email, 
-          passwordHash: password // O backend espera o campo com este nome no JSON
+          passwordHash: password 
         })
       });
 
       if (resposta.ok) {
         const dados = await resposta.json();
         
-        // Guarda o "crachá" de acesso (Token) e o nome do membro no browser
         localStorage.setItem('token', dados.token);
         localStorage.setItem('nomeAdmin', dados.nome);
         localStorage.setItem('cargoAdmin', dados.cargo);
         
-        // Abre as portas da Central!
-        navigate('/central-admin');
+        // DEFESA 2: Em vez do navigate, forçamos um recarregamento limpo para a Central
+        // Isto garante que o ProtectedRoute e o Navbar assumem o novo Token a 100%
+        window.location.href = '/central-admin';
       } else {
         setErro('Email ou password incorretos. Tente novamente.');
       }
@@ -64,7 +71,7 @@ export default function Login() {
             <input 
               type="email" 
               required 
-              placeholder=""
+              placeholder="ex: admin@ulpc.pt"
               className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e2a45] transition"
               value={email} 
               onChange={e => setEmail(e.target.value)} 
@@ -76,7 +83,7 @@ export default function Login() {
             <input 
               type="password" 
               required 
-              placeholder=""
+              placeholder="••••••••"
               className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e2a45] transition"
               value={password} 
               onChange={e => setPassword(e.target.value)} 
